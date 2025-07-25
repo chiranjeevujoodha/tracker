@@ -8,9 +8,11 @@ from django.utils.decorators import method_decorator
 def home(request):
     groups = workout_group.objects.all()
     exercises = exercise.objects.all()
+    sessions = Workout_sessions.objects.all()
     return render(request, 'app/home.html', {
         'groups': groups,
-        'exercises': exercises
+        'exercises': exercises,
+        'sessions': sessions
         })
 
 
