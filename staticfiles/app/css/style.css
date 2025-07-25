@@ -1,0 +1,77 @@
+:root {
+    --main-bg-color: #082C38;
+    --main-txt-color: white;
+}
+
+.title {
+    color: darkblue;
+    font-size: 30px;
+    text-align: center;
+}
+
+/* ------------------------------------------------- */
+/* NAVBAR */
+
+
+body .NavbarNav {
+    padding: 2% 5% 2% 5%;
+    background-color: var(--main-bg-color);
+}
+
+.navlogo {
+    color: white;
+}
+
+.navbar-btn {
+    background-color: white;
+}
+
+
+/* ------------------------------------------------- */
+/* WORKOUT GROUPS */
+
+.container-wk-grp {
+    /* border: 1px solid red; */
+    /* margin-top: 10px;
+    margin-left: 10px; */
+    margin-bottom: 5%;
+}
+
+.btn-custom {
+    background-color: var(--main-bg-color);
+    color: var(--main-txt-color);
+}
+
+.btn-custom:focus, .btn-custom:active {
+    background-color: var(--main-bg-color);
+    color: white;
+}
+
+
+/* ------------------------------------------------- */
+/* MODAL */
+.modal-header-container {
+    background-color: var(--main-bg-color);
+    color: white;
+}
+
+#btn-close-custom {
+    color: var(--main-txt-color) !important;
+}
+
+/* ------------------------------------------------- */
+/* CREATE WORKOUT */
+.home-container {
+    /* border:2px solid red; */
+    margin-top: 5%;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+/* ------------------------------------------------- */
+/* PERSONAL BEST */
+
+.table-perso-best {
+    /* border:2px solid red; */
+    margin-top: 5%;
+}
