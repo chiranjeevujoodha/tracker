@@ -40,6 +40,7 @@ body .NavbarNav {
 .btn-custom {
     background-color: var(--main-bg-color);
     color: var(--main-txt-color);
+
 }
 
 .btn-custom:focus, .btn-custom:active {
@@ -76,4 +77,12 @@ body .NavbarNav {
 .table-perso-best {
     /* border:2px solid red; */
     margin-top: 5%;
+}
+
+.perso-best-banner {
+    /* border:2px solid red; */
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
 }
