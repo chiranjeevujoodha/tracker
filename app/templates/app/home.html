@@ -4,9 +4,9 @@
 {% block content %}
 
     <div class="home-container">
-        <div class="container-wk-grp">
+        <!-- <div class="container-wk-grp">
             <button class="btn btn-custom"  data-bs-toggle="modal" data-bs-target="#workoutModal">Show Workout Groups</button>
-        </div>
+        </div> -->
     
     
         <div class="create-wk-session">
@@ -22,6 +22,7 @@
                     <option value="{{ group.id }}">{{ group.group }}</option>
                     {% endfor %}
                 </select>
+
         
                 <label for="date">Session Date:</label>
                 <input type="date" name="session_date" id="date" class="form-control" required>
@@ -45,30 +46,12 @@
                 <th>Workout</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for session in sessions %}
-                <tr>
-                    <td>{{ session.session_date }}</td>
-                    <td>{{ session.workout_group.group }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="2">No workout sessions available.</td>
-                </tr>
-                {% endfor %}
+            <tbody id="sessions-table-body">
+
             </tbody>
             </table>
         </div>
         
-
-
-
-
-
-
-
-
-
 
 
         <div class="table-perso-best">
@@ -120,95 +103,98 @@
 
 {% block extra_scripts %}
 <script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
 
-// Multi Select Filter
-$(document).ready(function() {
+$(document).ready(function () {
     $('#group').multiselect({
         includeSelectAllOption: true,
-        nonSelectedText: 'Choose workout groups',
         enableFiltering: true,
-        buttonWidth: '100%'
+        buttonWidth: '100%',
+        nonSelectedText: 'Choose workout groups'
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    // ✅ Initialize the multiselect dropdown with checkboxes
+    $('#group').multiselect({
+        includeSelectAllOption: true,
+        enableFiltering: true,
+        buttonWidth: '100%',
+        nonSelectedText: 'Choose workout groups'
+    });
 
-// Submit form
-document.getElementById('sessionForm').addEventListener('submit', function(e) {
-    e.preventDefault(); // Prevent normal form submission
+    const form = document.getElementById("sessionForm");
+    const tableBody = document.getElementById("sessions-table-body");
+    const responseMessage = document.getElementById("responseMessage");
 
-    const form = this;
-    const formData = new FormData(form);
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
 
-    fetch("{% url 'save-session' %}", {
-        method: "POST",
-        body: formData,
-        headers: {
-            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+        const selectedGroups = $('#group').val(); // Get selected values
+        const sessionDate = document.getElementById("date").value;
+
+        if (!selectedGroups || selectedGroups.length === 0) {
+            responseMessage.innerHTML = `<div class="alert alert-warning">Please select at least one group.</div>`;
+            return;
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const msgDiv = document.getElementById('responseMessage');
-        if (data.status === 'success') {
-            msgDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
 
-            // Reset the form
-            form.reset();
+        fetch("{% url 'create_session' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify({
+                workout_group: selectedGroups,
+                session_date: sessionDate
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // ✅ Add each session as a new <tr>
+                data.sessions.forEach(session => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${session.date}</td>
+                        <td>${session.group}</td>
+                    `;
+                    tableBody.prepend(row); // Add to top of table
+                });
 
-            // If using a multi-select dropdown plugin, also reset it:
-            $('#group').multiselect('deselectAll', false);
-            $('#group').multiselect('updateButtonText');
+                // ✅ Show success message
+                responseMessage.innerHTML = `
+                    <div class="alert alert-success">Workout session(s) saved successfully.</div>
+                `;
 
-            // Auto-hide after 3 seconds
-            setTimeout(() => {
-                msgDiv.innerHTML = '';
-            }, 2000);
-
-
-        } else {
-            msgDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
-        }
-    })
-    .catch(err => console.error("Error:", err));
-});
-
-// Load sessions and render table
-  {% comment %} function loadSessions() {
-    fetch("{% url 'sessions-list' %}")
-      .then(res => res.json())
-      .then(data => {
-        const tbody = document.getElementById('sessions-body');
-        tbody.innerHTML = data.sessions.map(s => `
-          <tr data-id="${s.id}">
-            <td>${s.date}</td>
-            <td>${s.group}</td>
-          </tr>
-        `).join('');
-      })
-      .catch(err => console.error(err));
-  } {% endcomment %}
-
-
-
-
-
-
-
-
-document.getElementById('exerciseFilter').addEventListener('keyup', function() {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#exerciseTable tr');
-
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(filter) ? '' : 'none';
+                // ✅ Reset form + dropdown
+                $('#sessionForm')[0].reset();
+                $('#group').multiselect('deselectAll', false);
+                $('#group').multiselect('updateButtonText');
+            } else {
+                responseMessage.innerHTML = `<div class="alert alert-danger">Error: ${data.message || 'Could not save session.'}</div>`;
+            }
+        })
+        .catch(error => {
+            console.error("AJAX error:", error);
+            responseMessage.innerHTML = `<div class="alert alert-danger">AJAX error. See console for details.</div>`;
+        });
     });
 });
-
-
-
-
 
 </script>
 {% endblock %}
