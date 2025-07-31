@@ -47,6 +47,11 @@
                 </tr>
             </thead>
             <tbody id="sessions-table-body">
+                {% for session in sessions %}
+                <tr>
+                    <td>{{ session.session_date }}</td>
+                    <td>{{ session.workout_group.group }}</td>
+                </tr>
 
             </tbody>
             </table>

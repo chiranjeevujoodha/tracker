@@ -9,10 +9,11 @@ from django.utils.dateparse import parse_date
 def home(request):
     groups = workout_group.objects.all()
     exercises = exercise.objects.all()
-    sessions = Workout_sessions.objects.all()
+    sessions = Workout_sessions.objects.select_related('workout_group').order_by('-session_date')
     return render(request, 'app/home.html', {
         'groups': groups,
         'exercises': exercises,
+        'sessions': sessions
         })
 
 
