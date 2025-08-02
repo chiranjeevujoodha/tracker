@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import workout_group, exercise, Workout_sessions
+from .models import workout_group, Workout_sessions, personal_best, exercise
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils.dateparse import parse_date
@@ -8,11 +8,11 @@ from django.utils.dateparse import parse_date
 # Create your views here.
 def home(request):
     groups = workout_group.objects.all()
-    exercises = exercise.objects.all()
+    perso_best = personal_best.objects.all()
     sessions = Workout_sessions.objects.select_related('workout_group').order_by('-session_date')
     return render(request, 'app/home.html', {
         'groups': groups,
-        'exercises': exercises,
+        'perso_best': perso_best,
         'sessions': sessions
         })
 
@@ -41,3 +41,6 @@ def create_session(request):
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
+def exercises(request):
+    exercises = exercise.objects.all()
+    return render(request, 'app/exercises.html', {'exercises' : exercises})

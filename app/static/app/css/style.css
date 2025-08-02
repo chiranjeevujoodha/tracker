@@ -14,8 +14,16 @@
 
 
 body .NavbarNav {
+     /* border: 1px solid red; */
     padding: 2% 5% 2% 5%;
     background-color: var(--main-bg-color);
+}
+
+.navbar-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    /* border: 1px solid red; */
 }
 
 .navlogo {

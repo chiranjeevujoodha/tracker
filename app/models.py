@@ -15,9 +15,17 @@ class Workout_sessions(models.Model):
 
     def __str__(self):
         return f"{self.workout_group} - {self.session_date}"
-
+    
 
 class exercise(models.Model):
+    exercise = models.CharField(max_length=100)
+    workout_group = models.ForeignKey(workout_group, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.workout_group} - {self.exercise}"
+
+
+class personal_best(models.Model):
 
     KG = 'kg'
     BARS = 'bars'
@@ -27,10 +35,9 @@ class exercise(models.Model):
         (BARS, 'Bars'),
     ]
 
-    workout_group = models.ForeignKey(workout_group, on_delete=models.CASCADE)
-    exercise =  models.CharField(max_length=100)
+    exercise =  models.ForeignKey(exercise, on_delete=models.CASCADE)
     uom = models.CharField(max_length=10, choices=UOM_CHOICES)
     max_weight = models.FloatField()
 
     def __str__(self):
-        return f"{self.workout_group} {self.exercise} ({self.uom})"
+        return f"{self.exercise} ({self.uom})"

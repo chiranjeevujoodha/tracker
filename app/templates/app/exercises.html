@@ -1,0 +1,27 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+
+<div class="exercises-table">
+    <h2>Exercises</h2>
+
+    <table class="table table-striped table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+        <th>Group</th>
+        <th>Exercise</th>
+        </tr>
+    </thead>
+    <tbody >
+        {% for exercise in exercises %}
+        <tr>
+            <td>{{ exercise.workout_group.group }}</td>
+            <td>{{ exercise.exercise }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+</div>
+
+
+{% endblock %}
