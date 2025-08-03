@@ -2,26 +2,38 @@
 
 {% block content %}
 
-<div class="exercises-table">
-    <h2>Exercises</h2>
+<div class="home-container">
 
-    <table class="table table-striped table-bordered table-hover">
-    <thead class="table-dark">
-        <tr>
-        <th>Group</th>
-        <th>Exercise</th>
-        </tr>
-    </thead>
-    <tbody >
-        {% for exercise in exercises %}
-        <tr>
-            <td>{{ exercise.workout_group.group }}</td>
-            <td>{{ exercise.exercise }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    </table>
+    <div class="exercises-table">
+        <div class="perso-best-banner">
+
+            <h2>Exercises</h2>
+    
+            <div class="">
+                <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#addExerciseModal">Add New</button>
+                <button class="btn btn-custom">Edit</button>
+            </div>
+        
+        </div>
+        <table class="table table-striped table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+            <th>Group</th>
+            <th>Exercise</th>
+            </tr>
+        </thead>
+        <tbody >
+            {% for exercise in exercises %}
+            <tr>
+                <td>{{ exercise.workout_group.group }}</td>
+                <td>{{ exercise.exercise }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
 </div>
+
 
 
 {% endblock %}

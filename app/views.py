@@ -4,16 +4,46 @@ from .models import workout_group, Workout_sessions, personal_best, exercise
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils.dateparse import parse_date
+from calendar import monthrange, monthcalendar
+from datetime import date
+
+
+def calendar_view(request, year=2025, month=7):
+    # Get number of days in month
+    num_days = monthrange(year, month)[1]
+
+    # Get all session dates in that month
+    sessions = Workout_sessions.objects.filter(
+        session_date__year=year,
+        session_date__month=month
+    ).values_list('session_date', flat=True)
+
+    session_dates = set(d.day for d in sessions)  # only day number
+
+    # For rendering rows
+    cal_matrix = monthcalendar(year, month)  # returns list of weeks with 0s for empty days
+
+    context = {
+        'month_name': date(year, month, 1).strftime('%B'),
+        'year': year,
+        'cal_matrix': cal_matrix,
+        'session_dates': session_dates,
+    }
+    return render(request, 'app/calendar.html', context)
+
+
 
 # Create your views here.
 def home(request):
     groups = workout_group.objects.all()
     perso_best = personal_best.objects.all()
+    exercises = exercise.objects.all()
     sessions = Workout_sessions.objects.select_related('workout_group').order_by('-session_date')
     return render(request, 'app/home.html', {
         'groups': groups,
         'perso_best': perso_best,
-        'sessions': sessions
+        'sessions': sessions,
+        'exercises': exercises
         })
 
 
